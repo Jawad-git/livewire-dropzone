@@ -138,3 +138,51 @@ class Dropzone extends Component
 
     /**
      * Retrieve the MIME types from the rules.
+    */
+    #[Computed]
+    public function mimes(): string
+    {
+        return collect($this->rules)
+            ->filter(fn($rule) => str_starts_with($rule, 'mimes:'))
+            ->flatMap(fn($rule) => explode(',', substr($rule, strpos($rule, ':') + 1)))
+            ->unique()
+            ->values()
+            ->join(', ');
+    }
+
+    /**
+     * Get the accepted file extensions based on MIME types.
+     */
+    #[Computed]
+    public function accept(): ?string
+    {
+        return ! empty($this->mimes) ? collect(explode(', ', $this->mimes))->map(fn($mime) => '.' . $mime)->implode(',') : null;
+    }
+
+    /**
+     * Get the maximum file size in a human-readable format.
+     */
+    #[Computed]
+    public function maxFileSize(): ?string
+    {
+        return collect($this->rules)
+            ->filter(fn($rule) => str_starts_with($rule, 'max:'))
+            ->flatMap(fn($rule) => explode(',', substr($rule, strpos($rule, ':') + 1)))
+            ->unique()
+            ->values()
+            ->first();
+    }
+
+    /**
+     * Checks if the provided MIME type corresponds to an image.
+     */
+    public function isImageMime($mime): bool
+    {
+        return in_array($mime, ['png', 'gif', 'bmp', 'svg', 'jpeg', 'jpg']);
+    }
+
+    public function render(): View
+    {
+        return view('livewire-dropzone::livewire.dropzone');
+    }
+}

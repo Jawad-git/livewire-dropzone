@@ -138,7 +138,7 @@ class Dropzone extends Component
 
     /**
      * Retrieve the MIME types from the rules.
-    */
+     */
     #[Computed]
     public function mimes(): string
     {

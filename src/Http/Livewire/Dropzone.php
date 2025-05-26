@@ -98,6 +98,11 @@ class Dropzone extends Component
     public function onFileAdded(array $file): void
     {
         $this->files = $this->multiple ? array_merge($this->files, [$file]) : [$file];
+        if ($this->oldDocs && count($this->oldDocs) > 0 && $this->multiple == false) {
+            $this->dispatch('removeOldUpload', $this->oldDocs[0]['id']);
+            $this->onRemoveOldDocEntryInDropzone($this->oldDocs[0]['id']);
+            $this->oldDocs = array_values($this->oldDocs);
+        }
     }
 
     #[On('removeOldDocEntryInDropzone')]
